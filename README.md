@@ -1,48 +1,85 @@
-Overview
-========
+## Apache Airflow DAG Authoring & Best Practices Workshop
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+*Date: 2024-05-02*
 
-Project Contents
-================
+This repository contains example code, exercises and solutions for the Apache Airflow DAG Authoring & Best Practices workshop.
 
-Your Astro project contains the following files and folders:
+## How to use this repository
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://docs.astronomer.io/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+While the DAGs in this repository can be used in any Airflow 2.9 setup, the easiest way to try them out locally is by either using the Astro CLI or GitHub Codespaces.
 
-Deploy Your Project Locally
-===========================
+### Using the Astro CLI
 
-1. Start Airflow on your local machine by running 'astro dev start'.
+1. Install the [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli) on your local machine
+2. Clone this repository
+3. Run `astro dev start` in the repository root, which will start a local Airflow using 4 Docker containers:
 
-This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
+    - Postgres: Airflow's Metadata Database
+    - Webserver: The Airflow component responsible for rendering the Airflow UI
+    - Scheduler: The Airflow component responsible for monitoring and triggering tasks
+    - Triggerer: The Airflow component responsible for triggering deferred tasks
 
-- Postgres: Airflow's Metadata Database
-- Webserver: The Airflow component responsible for rendering the Airflow UI
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+4. You can access the Airflow UI at [http://localhost:8080](http://localhost:8080) with the login credentials `admin` and `admin`.
+5. Run DAGs by toggling them on in the Airflow UI and clicking the Run arrow.
 
-2. Verify that all 4 Docker containers were created by running 'docker ps'.
+### Using GitHub Codespaces
 
-Note: Running 'astro dev start' will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either [stop your existing Docker containers or change the port](https://docs.astronomer.io/astro/test-and-troubleshoot-locally#ports-are-not-available).
+1. Fork this repository.
+2. Create a new GitHub codespaces project on your fork by clicking **...** and **New with options**. Make sure it uses at least 4 cores!
+3. Wait for the codespaces project to start. Once it has started, open a new terminal and run the following command:
 
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
+    ```bash
+    astro dev start
+    ```
 
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
+4. Once the Airflow project has started access the Airflow UI by clicking on the **Ports** tab and opening the forward URL for port 8080.
+5. Log in to the Airflow UI using the credentials `admin` and `admin`.
+6. Run DAGs by toggling them on in the Airflow UI and clicking the Run arrow.
 
-Deploy Your Project to Astronomer
-=================================
+## Content
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://docs.astronomer.io/cloud/deploy-code/
+### DAGs
 
-Contact
-=======
+#### Example DAGs:
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+- `bad_dag.py`: A DAG with common issues and anti-patterns
+- `good_dag.py`: The same DAG but with best practices applied
+- `in_cat_fact.py`: Very simple beginner DAG from the `Airflow in 1 Slide` Slide.
+- `datasets/`
+    - `datasets_simple_upstream.py`: A DAG that is scheduled on 1 Dataset and produces updates to 3 other Datasets.
+    - `datasets_simple_downstream.py`: A DAG that is scheduled on 2 Datasets.
+- `dynamic_task_mapping/`
+    - `dynamic_task_example_traditional.py`: A DAG that demonstrates how to use dynamic task mapping with traditional Airflow operators.
+    - `dynamic_task_example_taskflow.py`: A DAG that demonstrates how to use dynamic task mapping with the TaskFlow API (`@task` decorator).
+    - `dynamic_task_group_mapping.py`: A DAG that demonstrates how to dynamically map a task group.
+    - `dynamic_task_expand_kwargs.py`: A DAG that demonstrates mapping over sets of keyword arguments using `.expand_kwargs()`.
+
+
+#### Exercise DAGs:
+
+- `/datasets/`
+    - `basic/`
+        - `my_monolithic_dag.py`: A longer DAG. Exercise: Split this DAG into multiple smaller DAGs and schedule them using datasets.
+    - `advanced/`
+        - `ex_time_datasets.py`: Schedule this DAG on a time and dataset schedule as described in the docstring.
+        - `ex_conditional_datasets.py`: Schedule this DAG on several datasets using conditional logic as described in the docstring.
+- `/dynamic_task_mapping/`
+    - `ex_dynamic_task_mapping.py`: Exercise: Refactor this DAG to use dynamic task mapping.
+
+
+#### Solution DAGs:
+
+- `/datasets/`
+    - `basic/`
+        - `my_etl_dag.py` and `my_ml_dag.py`: A possible solution to the `my_monolithic_dag.py` exercise.
+    - `advanced/`
+        - `sol_time_datasets_solution.py`: The solution to the `ex_time_datasets.py` exercise.
+        - `sol_conditional_datasets_solution.py`: The solution to the `ex_conditional_datasets.py` exercise.
+- `/dynamic_task_mapping/`
+    - `sol_dynamic_task_mapping.py`: The solution to the `ex_dynamic_task_mapping.py` exercise.
+
+
+### Other
+
+The `include/dynamic_dag_generation_multifile_method/` folder contains an example of generating DAG files from a JSON config.
+The `tests` folder contains examples for DAG validation tests, unit tests and integration tests. You can run all tests with the Astro CLI by using `astro dev pytest`.

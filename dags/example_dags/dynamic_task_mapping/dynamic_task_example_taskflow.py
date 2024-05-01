@@ -21,18 +21,18 @@ def dynamic_task_example_taskflow():
         return [f"folder/file{i}" for i in random.sample(range(1000), num_files)]
 
     @task(map_index_template="{{ my_custom_map_index }}")
-    def process_file(constant: int, file: str) -> None:
+    def process_file(constant: int, my_file: str) -> None:
         # logic to process file
 
         # create the custom map index
         from airflow.operators.python import get_current_context
 
         context = get_current_context()
-        context["my_custom_map_index"] = f"Processed {file} with constant: {constant}"
+        context["my_custom_map_index"] = f"Processed {my_file} with constant: {constant}"
 
     file_paths = get_file_paths()
     processed_files = process_file.partial(constant=42).expand(
-        file=file_paths
+        my_file=file_paths
     )  # the mapping happens here .partial takes the constant argument and .expand takes the changing argument
 
 

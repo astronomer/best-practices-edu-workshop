@@ -20,12 +20,12 @@ def dynamic_task_expand_kwargs():
         random_noise = random.randint(1, 1000)
 
         return [
-            {"file": f"folder/file{i}", "num": i + random_noise}
+            {"my_file": f"folder/file{i}", "num": i + random_noise}
             for i in random.sample(range(1000), num_sets)
         ]  # this is preparing downstream to map over sets of keyword arguments
 
     @task(map_index_template="{{ my_custom_map_index }}")
-    def process_file(constant: int, file: str, num: int) -> None:
+    def process_file(constant: int, my_file: str, num: int) -> None:
         # logic to process file
 
         # create the custom map index
@@ -33,7 +33,7 @@ def dynamic_task_expand_kwargs():
 
         context = get_current_context()
         context["my_custom_map_index"] = (
-            f"Processed {file} with num: {num} and constant: {constant}"
+            f"Processed {my_file} with num: {num} and constant: {constant}"
         )
 
     file_paths = get_file_paths()

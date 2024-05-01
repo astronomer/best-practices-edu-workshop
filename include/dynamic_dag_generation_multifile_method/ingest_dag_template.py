@@ -73,9 +73,9 @@ def ingest_dag():
 
     @task(task_id=f"verify_checksum_source_name_to_replace")
     def check_checksum(
-        file: ObjectStoragePath,
+        my_file: ObjectStoragePath,
     ) -> list:
-        check_sum_file = file.checksum()
+        check_sum_file = my_file.checksum()
 
         result = verify_checksum(check_sum_file)
 
@@ -120,7 +120,7 @@ def ingest_dag():
         source_name=path_extension_to_replace,
     ).expand(source_file=source_files)
 
-    checked_files = check_checksum.expand(file=extract_obj)
+    checked_files = check_checksum.expand(my_file=extract_obj)
 
     load_obj = load.partial(
         base_path_load=base_path_load_to_replace,

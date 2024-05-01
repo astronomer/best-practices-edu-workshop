@@ -53,6 +53,7 @@ While the DAGs in this repository can be used in any Airflow 2.9 setup, the easi
     - `dynamic_task_example_taskflow.py`: A DAG that demonstrates how to use dynamic task mapping with the TaskFlow API (`@task` decorator).
     - `dynamic_task_group_mapping.py`: A DAG that demonstrates how to dynamically map a task group.
     - `dynamic_task_expand_kwargs.py`: A DAG that demonstrates mapping over sets of keyword arguments using `.expand_kwargs()`.
+    - `dynamic_task_mapping_xcom.py`: A DAG showing XCom usage with dynamic task mapping.
 
 
 #### Exercise DAGs:
